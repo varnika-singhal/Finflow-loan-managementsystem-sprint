@@ -49,4 +49,5 @@ public class LoanApplicationController {
     public LoanApplication getApplication(@PathVariable Long id) {
         return service.getApplicationById(id);
     }
+    
 }
