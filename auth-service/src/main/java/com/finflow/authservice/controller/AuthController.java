@@ -1,24 +1,27 @@
 package com.finflow.authservice.controller;
 
 import com.finflow.authservice.dto.*;
+import jakarta.validation.Valid;
 import com.finflow.authservice.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthService service;
+    private final AuthService service;
+
+    public AuthController(AuthService service) {
+        this.service = service;
+    }
 
     @PostMapping("/register")
-    public String register(@RequestBody RegisterRequestDTO dto) {
+    public String register(@Valid @RequestBody RegisterRequestDTO dto) {
         return service.register(dto);
     }
 
     @PostMapping("/login")
-    public AuthResponseDTO login(@RequestBody AuthRequestDTO dto) {
+    public AuthResponseDTO login(@Valid @RequestBody AuthRequestDTO dto) {
         return service.login(dto);
     }
 }

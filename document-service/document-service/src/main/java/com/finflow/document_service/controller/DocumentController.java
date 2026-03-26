@@ -2,7 +2,7 @@ package com.finflow.document_service.controller;
 
 import com.finflow.document_service.entity.Document;
 import com.finflow.document_service.service.DocumentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,12 +11,15 @@ import java.util.List;
 @RequestMapping("/documents")
 public class DocumentController {
 
-    @Autowired
-    private DocumentService service;
+    private final DocumentService service;
+
+    public DocumentController(DocumentService service) {
+        this.service = service;
+    }
 
     // Upload document
     @PostMapping("/upload")
-    public Document upload(@RequestBody Document doc) {
+    public Document upload(@Valid @RequestBody Document doc) {
         return service.upload(doc);
     }
 
