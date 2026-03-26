@@ -2,7 +2,7 @@ package com.finflow.application_service.controller;
 
 import com.finflow.application_service.entity.LoanApplication;
 import com.finflow.application_service.service.LoanApplicationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,12 +11,15 @@ import java.util.List;
 @RequestMapping("/applications")
 public class LoanApplicationController {
 
-    @Autowired
-    private LoanApplicationService service;
+    private final LoanApplicationService service;
+
+    public LoanApplicationController(LoanApplicationService service) {
+        this.service = service;
+    }
 
     // Create Application
     @PostMapping
-    public LoanApplication create(@RequestBody LoanApplication app) {
+    public LoanApplication create(@Valid @RequestBody LoanApplication app) {
         return service.createApplication(app);
     }
 
@@ -25,8 +28,9 @@ public class LoanApplicationController {
     public LoanApplication submit(@PathVariable Long id) {
         return service.submitApplication(id);
     }
+
     @PutMapping("/{id}")
-    public LoanApplication update(@PathVariable Long id, @RequestBody LoanApplication app) {
+    public LoanApplication update(@PathVariable Long id, @Valid @RequestBody LoanApplication app) {
         return service.updateApplication(id, app);
     }
 
@@ -41,13 +45,12 @@ public class LoanApplicationController {
     }
 
     @PutMapping("/{id}/status")
-    public LoanApplication updateStatus(@PathVariable Long id,
-                                        @RequestParam String status) {
+    public LoanApplication updateStatus(@PathVariable Long id, @RequestParam String status) {
         return service.updateStatus(id, status);
     }
+
     @GetMapping("/{id}")
     public LoanApplication getApplication(@PathVariable Long id) {
         return service.getApplicationById(id);
     }
-    
 }
