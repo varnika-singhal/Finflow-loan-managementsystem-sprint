@@ -2,12 +2,15 @@ package com.finflow.authservice.util;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import com.finflow.authservice.entity.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
@@ -27,9 +30,14 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username) {
+    public String generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRole());
+        claims.put("userId", user.getId());
+
         return Jwts.builder()
-                .setSubject(username)
+                .setClaims(claims)
+                .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
@@ -52,5 +60,31 @@ public class JwtUtil {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public String extractRole(String token) {
+        Object role = Jwts.parserBuilder()
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role");
+        return role == null ? "" : role.toString();
+    }
+
+    public Long extractUserId(String token) {
+        Object userId = Jwts.parserBuilder()
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("userId");
+        if (userId instanceof Integer integerValue) {
+            return integerValue.longValue();
+        }
+        if (userId instanceof Long longValue) {
+            return longValue;
+        }
+        return userId == null ? null : Long.valueOf(userId.toString());
     }
 }

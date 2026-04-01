@@ -33,6 +33,9 @@ public class LoanApplication {
     @Positive(message = "Loan amount must be positive")
     private Double loanAmount;
 
+    @NotBlank(message = "Loan type is required")
+    private String loanType;
+
     @NotNull(message = "Tenure is required")
     @Positive(message = "Tenure must be positive")
     private Integer tenure;

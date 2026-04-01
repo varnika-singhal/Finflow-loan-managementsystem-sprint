@@ -5,6 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface LoanApplicationRepository extends JpaRepository<LoanApplication, Long> {
-
     List<LoanApplication> findByUserId(Long userId);
+
+    long countByLoanType(String loanType);
+
+    List<LoanApplication> findByLoanType(String loanType);
+
+    List<LoanApplication> findByStatus(String status);
 }

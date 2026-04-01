@@ -2,6 +2,7 @@ package com.finflow.application_service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -9,6 +10,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -31,7 +33,13 @@ public class SecurityConfig {
                                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden"))
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/error").permitAll()
+                        .requestMatchers(
+                                "/error",
+                                "/products/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

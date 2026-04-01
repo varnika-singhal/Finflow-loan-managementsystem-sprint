@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Locale;
-
 @Service
 public class AuthService {
 
@@ -44,9 +44,48 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
 
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtUtil.generateToken(user);
 
-        return new AuthResponseDTO(token, "Login successful");
+        return new AuthResponseDTO(token, "Login successful", user.getId(), user.getRole());
+    }
+
+    public List<User> getAllUsers() {
+        return repo.findAll();
+    }
+
+    public User getUserById(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+
+    public User getUserByUsername(String username) {
+        return repo.findTopByUsernameOrderByIdDesc(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+
+    public boolean userExists(String username) {
+        return repo.existsByUsername(username);
+    }
+
+    public List<User> getUsersByRole(String role) {
+        return repo.findByRole(resolveRole(role));
+    }
+
+    public User updateUserRole(Long id, String role) {
+        User user = getUserById(id);
+        user.setRole(resolveRole(role));
+        return repo.save(user);
+    }
+
+    public User updatePassword(Long id, String password) {
+        User user = getUserById(id);
+        user.setPassword(password);
+        return repo.save(user);
+    }
+
+    public void deleteUser(Long id) {
+        User user = getUserById(id);
+        repo.delete(user);
     }
 
     private String resolveRole(String role) {

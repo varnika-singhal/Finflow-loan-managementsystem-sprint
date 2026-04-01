@@ -34,4 +34,30 @@ public class JwtUtil {
             return false;
         }
     }
+
+    public String extractRole(String token) {
+        Object role = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role");
+        return role == null ? "" : role.toString();
+    }
+
+    public Long extractUserId(String token) {
+        Object userId = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("userId");
+        if (userId instanceof Integer integerValue) {
+            return integerValue.longValue();
+        }
+        if (userId instanceof Long longValue) {
+            return longValue;
+        }
+        return userId == null ? null : Long.valueOf(userId.toString());
+    }
 }

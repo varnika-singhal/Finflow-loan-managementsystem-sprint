@@ -11,6 +11,7 @@ out/
 
 *.class
 *.log
+.scannerwork/
 
 .DS_Store
 Thumbs.db
